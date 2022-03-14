@@ -35,7 +35,7 @@ const newUpdater = new CGU({
 // Schedule a task to update the repository
 // It uses .update() function
 // Check is performed and won't update if same version
-newUpdater.schedule('* * * * *', 'Asia/Manila')
+newUpdater.schedule('0 0 * * *', 'Asia/Manila')
 
 // Call the updater manually
 // It first check for internect connection
@@ -57,7 +57,7 @@ Task scheduler based on timezone
 
 ### <b>Params</b>
 
-- `cron_syntax` - Schedule when the task should run. e.g. `1,2,4,5 \* \*
+- `cron_syntax` - Schedule when the task should run. e.g. `'0 0 * * *'` (schedule every 12am)
 
 ```bash
 # ┌────────────── second (optional)

@@ -1,0 +1,38 @@
+{
+  "name": "cron-git-updater",
+  "version": "0.0.1",
+  "displayName": "Cron Git Updater",
+  "productName": "Cron Git Updater",
+  "description": "Cronjob to Git Pull Repository",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js",
+    "start": "NODE_ENV=production node index.js"
+  },
+  "keywords": [
+    "NodeJS",
+    "CRON",
+    "GIT"
+  ],
+  "author": {
+    "name": "Mike Saraus",
+    "email": "mizkie98@gmail.com",
+    "url": "https://gitlab.com/mikesaraus"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/mikesaraus/cron-git-updater.git"
+  },
+  "bugs": {
+    "url": "https://gitlab.com/mikesaraus/cron-git-updater/issues"
+  },
+  "homepage": "https://gitlab.com/mikesaraus/cron-git-updater#readme",
+  "license": "MIT",
+  "dependencies": {
+    "app-root-path": "^3.0.0",
+    "dns-socket": "^4.2.2",
+    "fs-extra": "^10.0.1",
+    "node-cron": "^3.0.0",
+    "simple-git": "^3.3.0"
+  }
+}

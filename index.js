@@ -209,8 +209,28 @@ module.exports = class CronGitUpdate {
   /**
    * Schedule a task
    *
-   * @param {String} cron_syntax
-   * Schedule when the task should run. e.g. `1,2,4,5 * * * *`
+   * @param {String} cron_expression Schedule when the task should run.
+   *
+   * Validate the expression using .{@link validateSchedule}()
+   *
+   * @param {string} timezone The timezone that is used for job scheduling. Default is `Asia/Manila`
+   */
+  async schedule(cron_expression, timezone) {
+    if (!cron_expression) throw new Error('Cron Expression is Required')
+    if (!cron.validate(cron_expression)) throw new Error('Cron Syntax Error')
+    if (!timezone) timezone = process.env.TZ || 'Asia/Manila'
+    cron.schedule(
+      cron_expression,
+      () => {
+        log.info('[ Cron Git Updater ] Running Scheduled task...')
+        this.update()
+      },
+      { scheduled: true, timezone: timezone }
+    )
+  }
+
+  /**
+   * Validate Cron Expression
    *
    * Allowed fields
    * ```js
@@ -224,20 +244,10 @@ module.exports = class CronGitUpdate {
    *  # │ │ │ │ │ │
    *  # * * * * * *
    * ```
-   * @param {string} timezone The timezone that is used for job scheduling. Default is `Asia/Manila`
    */
-  async schedule(cron_syntax, timezone) {
-    if (!cron_syntax) throw new Error('Cron Syntact is Required')
-    if (!cron.validate(cron_syntax)) throw new Error('Cron Syntax Error')
-    if (!timezone) timezone = process.env.TZ || 'Asia/Manila'
-    cron.schedule(
-      cron_syntax,
-      () => {
-        log.info('[ Cron Git Updater ] Running Scheduled task...')
-        this.update()
-      },
-      { scheduled: true, timezone: timezone }
-    )
+  async validateSchedule(cron_expression) {
+    if (!cron_expression) throw new Error('Cron Expression is Required')
+    return cron.validate(cron_expression)
   }
 }
 

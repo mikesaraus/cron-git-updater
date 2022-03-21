@@ -51,7 +51,6 @@ module.exports = class CronGitUpdate {
     config = newConfig
 
     if (config.fromReleases) {
-      ready = false
       setBranchToReleaseTag(config.repository)
     }
 
@@ -457,7 +456,7 @@ const log = {
  */
 async function backupApp() {
   let destination = path.join(config.tempLocation, backupSubdirectory)
-  if (config.keepAllBackup !== false) destination = destination + '_' + Date.now()
+  if (config.keepAllBackup !== false) destination = path.join(destination, Date.now())
   log.info('Backing up app to ' + destination)
   await fs.ensureDir(destination)
   await fs.copy(appRootPath.path, destination, { dereference: true })
@@ -565,7 +564,6 @@ async function setBranchToReleaseTag(repository) {
     let response = JSON.parse(body)
     let tag = response.tag_name
     config.branch = tag
-    ready = true
   } catch (err) {
     if ((err = 404)) throw new Error('This repository requires a token or does not exist. \n ' + url)
     throw err

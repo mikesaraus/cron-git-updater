@@ -19,7 +19,7 @@ const pkg = require('./package.json')
  * @property {Boolean} keepAllBackup - To keep all backup in separate folder, not overwrite previous backups.
  * @property {String} testing_dir - A test directory for testing so app will not overwrite all files.
  * @property {String} executeOnComplete - A command to execute after an update completes. Good for restarting the app.
- * @property {Boolean} exitOnComplete - Use process exit to stop the app after a successful update.
+ * @property {Boolean} exitOnComplete - Use process exit to stop the app after update.
  */
 
 /** @type {CGU_Config} */
@@ -73,6 +73,7 @@ module.exports = class CronGitUpdate {
       await this.sleep(1000)
       log.info('Not ready to update...')
     }
+    log.info('Running update...')
     this.isOnline()
       .then(async () => {
         log.info('Checking update from the remote repository...')
@@ -83,11 +84,18 @@ module.exports = class CronGitUpdate {
         } else if (!versionCheck.currentVersion || !versionCheck.remoteVersion) {
           log.error('Failed getting versions')
           return false
-        } else return await this.forceUpdate()
+        } else {
+          this.forceUpdate()
+
+          return true
+        }
       })
       .catch(() => {
         log.error('Cannot Update: No Active Internet Connection')
         return false
+      })
+      .finally(() => {
+        if (config.exitOnComplete) process.exit(1)
       })
   }
 
@@ -105,6 +113,7 @@ module.exports = class CronGitUpdate {
    */
   async compareVersions() {
     try {
+      log.info('Comparing app version...')
       log.info('Getting local app version...')
       const appInfo = await this.readAppInfo()
       let currentVersion = appInfo ? appInfo.version : undefined
@@ -353,7 +362,7 @@ module.exports = class CronGitUpdate {
    */
   isOnline(config = {}) {
     const dns = require('dns-socket')
-
+    log.info('Checking if online...')
     return new Promise(function (resolve, reject) {
       // Create instance of the DNS resolver
       const socket = dns({
@@ -456,7 +465,7 @@ const log = {
  */
 async function backupApp() {
   let destination = path.join(config.tempLocation, backupSubdirectory)
-  if (config.keepAllBackup !== false) destination = path.join(destination, Date.now())
+  if (config.keepAllBackup !== false) destination = path.join(destination, String(Date.now()))
   log.info('Backing up app to ' + destination)
   await fs.ensureDir(destination)
   await fs.copy(appRootPath.path, destination, { dereference: true })
